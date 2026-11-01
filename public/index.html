@@ -1,0 +1,401 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Reel League</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,800&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #eff0f8; --surface: #ffffff; --ink: #1f2340; --muted: #5d6385; --line: #d9dcee;
+  --accent: #e4366f; --accent-ink: #ffffff; --coin: #ffd23f; --coin-ink: #3b2f00; --ok: #1f8a7d;
+  --display: "Bricolage Grotesque", system-ui, sans-serif;
+  --body: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root { --bg: #14162b; --surface: #1e2140; --ink: #eceefa; --muted: #9aa0c8; --line: #2e3263; --accent: #ff5c93; --accent-ink: #1a0a12; --ok: #4fd1c0; }
+}
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body { margin: 0; background: var(--bg); color: var(--ink); font: 16px/1.5 var(--body); }
+h1, h2, h3 { font-family: var(--display); line-height: 1.1; margin: 0; }
+h1 { font-size: clamp(2rem, 6vw, 3.2rem); font-weight: 800; letter-spacing: -0.02em; }
+h2 { font-size: 1.5rem; font-weight: 800; letter-spacing: -0.01em; }
+h3 { font-size: 1.1rem; font-weight: 600; }
+p { margin: 0; }
+.wrap { max-width: 1040px; margin: 0 auto; padding: 28px 18px 80px; }
+.narrow { max-width: 520px; }
+.muted { color: var(--muted); }
+.lede { color: var(--muted); font-size: 1.1rem; margin: 10px 0 28px; max-width: 46ch; }
+.stack > * + * { margin-top: 14px; }
+.section { margin-top: 44px; }
+.panel { background: var(--surface); border: 1px solid var(--line); border-radius: 18px; padding: 20px; }
+.panel + .panel { margin-top: 18px; }
+label { display: block; font-weight: 600; margin-bottom: 4px; font-size: .95rem; }
+input[type=text] { width: 100%; padding: 11px 13px; font: inherit; color: var(--ink); background: var(--bg); border: 1.5px solid var(--line); border-radius: 10px; }
+input[type=text]:focus-visible, button:focus-visible, a:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+button, .btn { font: inherit; font-weight: 600; cursor: pointer; border: 0; border-radius: 10px; padding: 11px 18px; background: var(--accent); color: var(--accent-ink); text-decoration: none; display: inline-block; }
+button.ghost { background: transparent; color: var(--ink); border: 1.5px solid var(--line); }
+button:disabled { opacity: .45; cursor: not-allowed; }
+.row { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+.row.between { justify-content: space-between; }
+.head { display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; flex-wrap: wrap; }
+.chip { display: inline-block; padding: 3px 11px; border-radius: 99px; background: var(--surface); border: 1px solid var(--line); font-size: .85rem; color: var(--muted); }
+.theme { font-family: var(--display); font-size: clamp(1.6rem, 4.5vw, 2.4rem); font-weight: 800; letter-spacing: -0.02em; margin: 6px 0 4px; }
+.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(290px, 1fr)); gap: 20px; margin-top: 18px; }
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: 18px; padding: 14px; display: flex; flex-direction: column; gap: 12px; }
+.card.mine { opacity: .75; }
+.phone { border-radius: 26px; border: 6px solid var(--ink); overflow: hidden; background: var(--bg); }
+.phone-screen { height: 520px; display: grid; place-items: center; }
+.phone-screen iframe { width: 100%; height: 100%; border: 0; background: #fff; }
+.open { font-size: .9rem; color: var(--muted); text-align: center; display: block; margin-top: 8px; }
+.stepper { display: flex; align-items: center; justify-content: center; gap: 16px; }
+.stepper button { width: 44px; height: 44px; padding: 0; font-size: 1.4rem; border-radius: 50%; }
+.coin { min-width: 52px; height: 52px; display: inline-grid; place-items: center; border-radius: 50%; background: var(--coin); color: var(--coin-ink); font-family: var(--display); font-weight: 800; font-size: 1.4rem; padding: 0 8px; }
+.coin.small { min-width: 34px; height: 34px; font-size: 1rem; }
+.coin.neg { background: var(--accent); color: var(--accent-ink); }
+.bar { position: sticky; bottom: 0; background: var(--surface); border: 1px solid var(--line); border-radius: 16px; padding: 12px 16px; margin-top: 22px; display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; }
+.result { display: grid; grid-template-columns: minmax(0, 1fr) 300px; gap: 20px; align-items: start; }
+.result + .result { margin-top: 18px; }
+.comments { list-style: none; margin: 10px 0 0; padding: 0; display: grid; gap: 6px; }
+.comments li { font-size: .95rem; }
+.name { font-weight: 600; }
+table { width: 100%; border-collapse: collapse; }
+th, td { text-align: left; padding: 10px 8px; border-bottom: 1px solid var(--line); }
+th { font-weight: 600; color: var(--muted); font-size: .9rem; }
+td.num, th.num { text-align: right; }
+.toast { position: fixed; left: 50%; bottom: 20px; transform: translateX(-50%); background: var(--ink); color: var(--bg); padding: 11px 18px; border-radius: 12px; max-width: 90vw; z-index: 10; }
+.toast.err { background: var(--accent); color: var(--accent-ink); }
+@media (max-width: 720px) { .result { grid-template-columns: 1fr; } }
+@media (prefers-reduced-motion: no-preference) { button { transition: transform .08s; } button:active:not(:disabled) { transform: scale(.97); } }
+</style>
+</head>
+<body>
+<div id="app"></div>
+<div id="toast" class="toast" role="status" hidden></div>
+
+<script>
+const app = document.getElementById('app');
+const toastEl = document.getElementById('toast');
+let token = localStorage.getItem('rl_token');
+let S = null;
+let draft = {};
+let draftRound = null;
+let dirty = false;
+let toastTimer;
+
+const esc = s => String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const plural = (n, w) => `${n} ${w}${n === 1 ? '' : 's'}`;
+
+function toast(msg, isErr) {
+  toastEl.textContent = msg;
+  toastEl.className = 'toast' + (isErr ? ' err' : '');
+  toastEl.hidden = false;
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => { toastEl.hidden = true; }, 3500);
+}
+
+async function api(path, body, method) {
+  const res = await fetch('/api' + path, {
+    method: method || (body ? 'POST' : 'GET'),
+    headers: { 'Content-Type': 'application/json', ...(token ? { 'x-token': token } : {}) },
+    body: body ? JSON.stringify(body) : undefined,
+  });
+  const data = await res.json().catch(() => ({}));
+  if (res.status === 401) { signOut(); throw new Error(data.error || 'Please sign in again.'); }
+  if (!res.ok) throw new Error(data.error || 'Something went wrong.');
+  return data;
+}
+
+function signOut() {
+  token = null; S = null;
+  localStorage.removeItem('rl_token');
+  renderLanding();
+}
+
+// ---------- landing ----------
+function renderLanding() {
+  const code = (new URLSearchParams(location.search).get('join') || '').toUpperCase();
+  app.innerHTML = `
+  <main class="wrap narrow">
+    <h1>Reel League</h1>
+    <p class="lede">Each round has a theme. Everyone submits an Instagram reel, then you spend points on your favourites.</p>
+    <section class="panel stack">
+      <h2>Join a league</h2>
+      <form data-form="join" class="stack">
+        <div><label for="jc">Invite code</label><input id="jc" name="code" type="text" value="${esc(code)}" maxlength="6" autocomplete="off" required></div>
+        <div><label for="jn">Your name</label><input id="jn" name="playerName" type="text" maxlength="30" required></div>
+        <button>Join league</button>
+      </form>
+    </section>
+    <section class="panel stack">
+      <h2>Start a league</h2>
+      <form data-form="create" class="stack">
+        <div><label for="cn">League name</label><input id="cn" name="name" type="text" maxlength="50" required></div>
+        <div><label for="cp">Your name</label><input id="cp" name="playerName" type="text" maxlength="30" required></div>
+        <button>Create league</button>
+      </form>
+    </section>
+  </main>`;
+}
+
+// ---------- league ----------
+const currentRound = () => S.rounds.find(r => r.status !== 'results');
+const pastRounds = () => S.rounds.filter(r => r.status === 'results').reverse();
+
+function reelBlock(url) {
+  return `<div><div class="phone"><div class="phone-screen" data-embed="${esc(url)}"><button data-action="watch">Watch here</button></div></div>
+  <a class="open" href="${esc(url)}" target="_blank" rel="noopener">Open on Instagram</a></div>`;
+}
+
+function renderLeague() {
+  const cur = currentRound();
+  const link = `${location.origin}/?join=${S.league.code}`;
+  app.innerHTML = `
+  <main class="wrap">
+    <header class="head">
+      <div>
+        <h1>${esc(S.league.name)}</h1>
+        <p class="muted" style="margin-top:8px">Playing as ${esc(S.me.name)}${S.me.isAdmin ? ' (admin)' : ''} \u2022 ${plural(S.players.length, 'player')}</p>
+      </div>
+      <div class="row">
+        <button class="ghost" data-action="copy" data-link="${esc(link)}">Copy invite link</button>
+        <button class="ghost" data-action="refresh">Refresh</button>
+        <button class="ghost" data-action="signout">Sign out</button>
+      </div>
+    </header>
+    <p class="muted" style="margin-top:10px">Invite code: <strong>${S.league.code}</strong></p>
+    <section class="section">${cur ? renderRound(cur) : renderNoRound()}</section>
+    <section class="section"><h2>Leaderboard</h2>${renderLeaderboard()}</section>
+    ${pastRounds().length ? `<section class="section"><h2>Past rounds</h2>${pastRounds().map(renderResults).join('')}</section>` : ''}
+  </main>`;
+  if (cur && cur.status === 'voting') updateVoteUI();
+}
+
+function renderNoRound() {
+  if (!S.me.isAdmin) return `<div class="panel"><h2>No round yet</h2><p class="muted" style="margin-top:8px">The admin hasn\u2019t started a round. Check back soon.</p></div>`;
+  return `<div class="panel stack"><h2>${S.rounds.length ? 'Start the next round' : 'Start your first round'}</h2>
+    <form data-form="round" class="stack"><div><label for="rt">Theme</label><input id="rt" name="theme" type="text" maxlength="120" placeholder="Best reel about food" required></div>
+    <button>Start round</button></form></div>`;
+}
+
+const waitingOn = ids => S.players.filter(p => !ids.includes(p.id)).map(p => esc(p.name)).join(', ');
+
+function progressHtml(r) {
+  const n = S.players.length;
+  if (r.status === 'submitting') {
+    const w = waitingOn(r.submitted);
+    return `${r.submitted.length} of ${n} reels submitted. Voting opens automatically once everyone has submitted.${w ? ` Waiting on ${w}.` : ''}`;
+  }
+  const w = waitingOn(r.voted);
+  return `${r.voted.length} of ${n} players have voted. Results appear automatically once everyone has voted.${w ? ` Waiting on ${w}.` : ''}`;
+}
+
+function renderRound(r) {
+  const head = `<span class="chip">Round ${r.num}</span><div class="theme">${esc(r.theme)}</div>`;
+  if (r.status === 'submitting') {
+    return `${head}
+    <p class="muted" id="progress">${progressHtml(r)}</p>
+    <p class="muted">Who submitted each reel stays hidden until results.</p>
+    <div class="panel stack" style="margin-top:16px">
+      <form data-form="submit" data-round="${r.id}" class="stack">
+        <div><label for="su">${r.myUrl ? 'Replace your reel' : 'Your reel link'}</label>
+        <input id="su" name="url" type="text" inputmode="url" placeholder="https://www.instagram.com/reel/\u2026" required></div>
+        <button>${r.myUrl ? 'Replace reel' : 'Submit reel'}</button>
+      </form>
+      ${r.myUrl ? `<p class="muted">Your reel is in.</p>${reelBlock(r.myUrl)}` : ''}
+    </div>
+    ${S.me.isAdmin ? `<div style="margin-top:16px"><button data-action="advance" data-round="${r.id}" data-confirm="Close submissions and start voting?">Close submissions and start voting</button></div>` : ''}`;
+  }
+  return `${head}
+    <p class="muted" id="progress">${progressHtml(r)}</p>
+    <p class="muted">You have ${S.rules.upvotes} upvotes and ${S.rules.downvotes} downvotes to spend however you like. Spend all of them to save.${r.voted.includes(S.me.id) ? ' Your votes are saved, and you can change them until everyone has voted.' : ''}</p>
+    <div class="grid">${r.entries.map(voteCard).join('')}</div>
+    <div class="bar"><div class="row"><span><span class="coin small" id="up-left">${S.rules.upvotes}</span> upvotes left</span>
+      <span><span class="coin small neg" id="down-left">${S.rules.downvotes}</span> downvotes left</span></div>
+      <div class="row">
+        ${S.me.isAdmin ? `<button class="ghost" data-action="advance" data-round="${r.id}" data-confirm="Close voting and reveal results?">Reveal results</button>` : ''}
+        <button data-action="save-votes" data-round="${r.id}">Save votes</button>
+      </div>
+    </div>`;
+}
+
+function voteCard(e) {
+  if (e.mine) return `<article class="card mine">${reelBlock(e.url)}<p class="muted" style="text-align:center">Your reel. You can\u2019t vote for it.</p></article>`;
+  const d = draft[e.id] || { points: 0, comment: '' };
+  return `<article class="card">${reelBlock(e.url)}
+    <div class="stepper">
+      <button data-action="pt" data-id="${e.id}" data-d="-1" aria-label="Downvote">\u2212</button>
+      <span class="coin" data-pts="${e.id}">${d.points}</span>
+      <button data-action="pt" data-id="${e.id}" data-d="1" aria-label="Upvote">+</button>
+    </div>
+    <input type="text" data-comment="${e.id}" maxlength="280" placeholder="Add a comment (optional)" value="${esc(d.comment)}" aria-label="Comment">
+  </article>`;
+}
+
+function renderLeaderboard() {
+  if (!S.rounds.some(r => r.status === 'results')) return `<p class="muted" style="margin-top:10px">Standings appear after the first round\u2019s results.</p>`;
+  return `<div class="panel" style="margin-top:14px"><table><thead><tr><th>Player</th><th class="num">Rounds</th><th class="num">Points</th></tr></thead><tbody>
+  ${S.leaderboard.map(p => `<tr><td class="name">${esc(p.name)}</td><td class="num">${p.rounds}</td><td class="num"><span class="coin small">${p.points}</span></td></tr>`).join('')}
+  </tbody></table></div>`;
+}
+
+function renderResults(r) {
+  return `<div style="margin-top:22px"><span class="chip">Round ${r.num}</span><h3 style="margin-top:6px">${esc(r.theme)}</h3>
+  ${r.entries.map((e, i) => `<article class="panel result"><div>
+      <div class="row"><span class="coin">${e.points}</span><div><div class="name">${esc(e.author)}</div><div class="muted">${i === 0 ? 'Round winner' : '#' + (i + 1)}</div></div></div>
+      <ul class="comments">${e.votes.map(v => `<li><span class="name">${esc(v.from)}</span> gave ${fmt(v.points)}${v.comment ? `: ${esc(v.comment)}` : ''}</li>`).join('') || '<li class="muted">No votes.</li>'}</ul>
+    </div>${reelBlock(e.url)}</article>`).join('')}</div>`;
+}
+
+// ---------- voting draft ----------
+const fmt = n => n > 0 ? '+' + n : n < 0 ? '\u2212' + Math.abs(n) : '0';
+
+function usage() {
+  let up = 0, down = 0;
+  Object.values(draft).forEach(d => { if (d.points > 0) up += d.points; else down -= d.points; });
+  return { up, down };
+}
+
+// dir +1 adds an upvote (or removes a downvote); dir -1 adds a downvote (or removes an upvote)
+function canStep(points, dir) {
+  const u = usage();
+  if (dir > 0) return points < 0 || u.up < S.rules.upvotes;
+  return points > 0 || u.down < S.rules.downvotes;
+}
+
+function updateVoteUI() {
+  document.querySelectorAll('[data-pts]').forEach(el => {
+    const p = (draft[el.dataset.pts] || { points: 0 }).points;
+    el.textContent = fmt(p);
+    el.classList.toggle('neg', p < 0);
+  });
+  const u = usage();
+  const upEl = document.getElementById('up-left');
+  const downEl = document.getElementById('down-left');
+  if (upEl) upEl.textContent = S.rules.upvotes - u.up;
+  if (downEl) downEl.textContent = S.rules.downvotes - u.down;
+  document.querySelectorAll('[data-action=pt]').forEach(b => {
+    const p = (draft[b.dataset.id] || { points: 0 }).points;
+    b.disabled = !canStep(p, Number(b.dataset.d));
+  });
+  const saveBtn = document.querySelector('[data-action=save-votes]');
+  if (saveBtn) saveBtn.disabled = u.up !== S.rules.upvotes || u.down !== S.rules.downvotes;
+}
+
+function syncDraft() {
+  const cur = currentRound();
+  if (!cur || cur.status !== 'voting') { draft = {}; draftRound = null; return; }
+  if (draftRound === cur.id) return;
+  draftRound = cur.id; draft = {}; dirty = false;
+  cur.entries.filter(e => !e.mine).forEach(e => { draft[e.id] = { points: 0, comment: '' }; });
+  cur.myVotes.forEach(v => { draft[v.submissionId] = { points: v.points, comment: v.comment }; });
+}
+
+// ---------- loading ----------
+async function load() {
+  if (!token) return renderLanding();
+  try {
+    S = await api('/state');
+    syncDraft();
+    renderLeague();
+  } catch (e) { if (token) toast(e.message, true); }
+}
+
+// ---------- events ----------
+document.addEventListener('submit', async ev => {
+  const form = ev.target.closest('form[data-form]');
+  if (!form) return;
+  ev.preventDefault();
+  const body = Object.fromEntries(new FormData(form));
+  const btn = form.querySelector('button');
+  btn.disabled = true;
+  try {
+    const kind = form.dataset.form;
+    if (kind === 'create' || kind === 'join') {
+      const res = await api(kind === 'create' ? '/leagues' : '/join', body);
+      token = res.token; localStorage.setItem('rl_token', token);
+      history.replaceState(null, '', '/');
+    } else if (kind === 'round') {
+      await api('/rounds', body);
+    } else if (kind === 'submit') {
+      const res = await api(`/rounds/${form.dataset.round}/submit`, body);
+      toast(res.status === 'voting' ? 'Everyone has submitted. Voting is open.' : 'Reel saved.');
+    }
+    await load();
+  } catch (e) { toast(e.message, true); btn.disabled = false; }
+});
+
+document.addEventListener('input', ev => {
+  const id = ev.target.dataset && ev.target.dataset.comment;
+  if (id && draft[id]) { draft[id].comment = ev.target.value; dirty = true; }
+});
+
+document.addEventListener('click', async ev => {
+  const el = ev.target.closest('[data-action]');
+  if (!el) return;
+  const a = el.dataset.action;
+  try {
+    if (a === 'watch') {
+      const box = el.closest('.phone-screen');
+      box.innerHTML = `<iframe src="${esc(box.dataset.embed)}embed" loading="lazy" allowfullscreen title="Instagram reel"></iframe>`;
+    } else if (a === 'pt') {
+      const d = draft[el.dataset.id]; const dir = Number(el.dataset.d);
+      if (!canStep(d.points, dir)) return;
+      d.points += dir; dirty = true; updateVoteUI();
+    } else if (a === 'save-votes') {
+      const votes = Object.entries(draft).filter(([, d]) => d.points !== 0)
+        .map(([id, d]) => ({ submissionId: Number(id), points: d.points, comment: d.comment }));
+      const res = await api(`/rounds/${el.dataset.round}/vote`, { votes });
+      dirty = false;
+      toast(res.status === 'results' ? 'Everyone has voted. Results are in.' : 'Votes saved.');
+      await load();
+    } else if (a === 'advance') {
+      if (!confirm(el.dataset.confirm)) return;
+      await api(`/rounds/${el.dataset.round}/advance`, {});
+      await load();
+    } else if (a === 'copy') {
+      await navigator.clipboard.writeText(el.dataset.link); toast('Invite link copied.');
+    } else if (a === 'refresh') {
+      if (dirty && !confirm('You have unsaved votes. Refresh anyway?')) return;
+      dirty = false; draftRound = null; await load();
+    } else if (a === 'signout') {
+      signOut();
+    }
+  } catch (e) { toast(e.message, true); }
+});
+
+// Check for changes every 15 seconds. A phase change re-renders the page; otherwise only the progress line updates,
+// so reels you're watching and votes you're typing aren't interrupted.
+const phaseSig = s => s.rounds.map(r => r.id + ':' + r.status).join('|');
+
+async function poll() {
+  if (!token || !S || document.hidden) return;
+  try {
+    const next = await api('/state');
+    const prev = currentRound();
+    const changed = phaseSig(next) !== phaseSig(S);
+    S = next;
+    const cur = currentRound();
+    if (changed) {
+      if (prev && !cur) toast('Everyone has voted. Results are in.');
+      else if (prev && cur && prev.id === cur.id) toast('Everyone has submitted. Voting is open.');
+      else if (!prev && cur) toast('A new round has started.');
+      syncDraft();
+      renderLeague();
+      return;
+    }
+    const el = document.getElementById('progress');
+    if (cur && el) el.innerHTML = progressHtml(cur);
+  } catch (e) { /* ignore network blips */ }
+}
+setInterval(poll, 15000);
+
+document.addEventListener('visibilitychange', () => { if (!document.hidden && token && !dirty) { draftRound = null; load(); } });
+
+load();
+</script>
+</body>
+</html>

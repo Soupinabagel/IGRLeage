@@ -1,0 +1,16 @@
+{
+  "name": "reel-league",
+  "version": "1.0.0",
+  "description": "A Music League-style game for friends, played with Instagram reels",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "engines": {
+    "node": ">=22"
+  },
+  "dependencies": {
+    "better-sqlite3": "^12.11.1",
+    "express": "^4.19.2"
+  }
+}
